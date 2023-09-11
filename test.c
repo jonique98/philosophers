@@ -6,19 +6,11 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 18:53:05 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/05 22:12:29 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/09/11 19:53:53 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ph.h"
-
-typedef struct s_para
-{
-	struct s_philo	*philo;
-	pthread_t		*ph;
-	pthread_mutex_t	**mutex;
-	int				id;
-} t_para;
 
 int	ft_atoi(const char *str)
 {
@@ -50,57 +42,54 @@ int	ft_atoi(const char *str)
 
 void	*do_something(void *a)
 {
-	t_para *para = (t_para *)a;
-	int left_fork = *(para->philo->left_fork);
-	int right_fork = *(para->philo->right_fork);
-	pthread_mutex_lock(para->mutex[left_fork]);
-	pthread_mutex_lock(para->mutex[right_fork]);
-	printf("%d is eating\n", para->philo->id);
-	usleep(1000);
-	pthread_mutex_unlock(para->mutex[left_fork]);
-	pthread_mutex_unlock(para->mutex[right_fork]);
-	usleep(20000);
+	t_philo *para = (t_philo *)a;
+	int	left_fork = para->left_fork;
+	int	right_fork = para->right_fork;
+	while (1)
+	{
+		pthread_mutex_lock(para->arg->mutex[left_fork]);
+		pthread_mutex_lock(para->arg->mutex[right_fork]);
+		printf("%d is eating\n", para->id);
+		usleep(10000);
+		pthread_mutex_unlock(para->arg->mutex[left_fork]);
+		pthread_mutex_unlock(para->arg->mutex[right_fork]);
+		usleep(200000);
+	}
 	return a;
 }
 
 int main(int ac, char **av)
 {
 	ac = 0;
-	t_arg arg;
-	t_philo		**philo;
+	t_arg		arg;
+	t_philo		*philo;
 	pthread_t	*ph;
-	pthread_mutex_t **mutex;
-	int *fork;
-	t_para para;
+
+	ph = malloc(sizeof(ph) * arg.philo_num);
 	
-	int i = 0;
 	arg.philo_num = ft_atoi(av[1]);
 	arg.time_to_die = ft_atoi(av[2]);
 	arg.time_to_eat = ft_atoi(av[3]);
 	// int time_to_sleep = ft_atoi(av[4]);
-	
-	ph = malloc(sizeof(ph) * arg.philo_num);
-	fork = calloc(arg.philo_num, sizeof(int));
-	mutex = malloc(sizeof(pthread_mutex_t *) * arg.philo_num);
-	philo = malloc(sizeof(t_philo *) * arg.philo_num);
-	while (i < arg.philo_num)
+
+	philo = malloc(sizeof(t_philo) * arg.philo_num);
+	arg.mutex = malloc(sizeof(pthread_mutex_t *) * arg.philo_num);
+	int i = -1;
+	while (++i < arg.philo_num)
+		arg.mutex[i] = malloc(sizeof(pthread_mutex_t));
+	arg.fork = calloc(arg.philo_num, sizeof(int));
+
+	i = -1;
+	while (++i < arg.philo_num)
 	{
-		philo[i] = malloc(sizeof(t_philo));
-		mutex[i] = malloc(sizeof(pthread_mutex_t));
-		philo[i]->id = i + 1;
-		philo[i]->left_fork = fork + philo[i]->id;
-		philo[i]->right_fork = fork + (philo[i]->id % arg.philo_num) + 1;
-		i++;
+		philo[i].id = i + 1;
+		philo[i].left_fork = philo[i].id;
+		philo[i].right_fork = (philo[i].id % arg.philo_num) + 1;
+		philo[i].arg = &arg;
 	}
-	para.mutex = mutex;
-	para.ph = ph;
-	i = 0;
-	while (i < arg.philo_num)
-	{
-		para.philo = philo[i];
-		pthread_create(&ph[i], NULL, do_something, &para);
-		i++;
-	}
+	i = -1;
+	while (++i < arg.philo_num)
+		pthread_create(&ph[i], NULL, do_something, &philo[i]);
 	i = 0;
 	while (i < arg.philo_num)
 	{
