@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 18:53:05 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/11 21:59:19 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/09/11 23:07:50 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,12 +60,11 @@ void	*do_something(void *a)
 			pthread_mutex_lock (&(philo->arg->mutex[right_fork]));
 			pthread_mutex_lock (&(philo->arg->mutex[left_fork]));
 			printf("%d is eating\n", philo->id);
-			usleep(100000);
 			philo->arg->fork[left_fork] = 0;
 			philo->arg->fork[right_fork] = 0;
 			pthread_mutex_unlock (&(philo->arg->mutex[right_fork]));
 			pthread_mutex_unlock (&(philo->arg->mutex[left_fork]));
-			usleep(300000);
+			usleep(200);
 		}
 		usleep(10000);
 	}
@@ -98,9 +97,12 @@ int main(int ac, char **av)
 		philo[i].left_fork = philo[i].id;
 		philo[i].right_fork = (philo[i].id % arg.philo_num) + 1;
 		philo[i].arg = &arg;
-		// printf("%d %d\n", philo[i].left_fork, philo[i].right_fork);
-		
 	}
+	// struct timeval time;
+
+	// gettimeofday(&time, NULL);
+	// printf("%ld\n", time.tv_sec);
+	// printf("%d\n", time.tv_usec);
 	i = -1;
 	while (++i < arg.philo_num)
 		pthread_create(&ph[i], NULL, do_something, &philo[i]);

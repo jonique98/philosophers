@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 18:47:41 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/11 21:16:58 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/09/11 23:07:15 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,13 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <sys/time.h>
+
+// struct timeval 
+// {
+//     time_t      tv_sec;
+//     suseconds_t tv_usec;
+// };
 
 typedef struct s_arg
 {
@@ -33,6 +40,7 @@ typedef struct s_philo
 	int					id;
 	int					left_fork;
 	int					right_fork;
+	long				end_time;
 	pthread_mutex_t		**mutex;
 	t_arg				*arg;
 }				t_philo;
