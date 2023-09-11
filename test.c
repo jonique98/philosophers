@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 18:53:05 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/11 19:53:53 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/09/11 21:59:19 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,18 +42,32 @@ int	ft_atoi(const char *str)
 
 void	*do_something(void *a)
 {
-	t_philo *para = (t_philo *)a;
-	int	left_fork = para->left_fork;
-	int	right_fork = para->right_fork;
+	t_philo *philo = (t_philo *)a;
+	int	left_fork = philo->left_fork;
+	int	right_fork = philo->right_fork;
 	while (1)
 	{
-		pthread_mutex_lock(para->arg->mutex[left_fork]);
-		pthread_mutex_lock(para->arg->mutex[right_fork]);
-		printf("%d is eating\n", para->id);
+		pthread_mutex_lock (&(philo->arg->mutex[right_fork]));
+		if (philo->arg->fork[right_fork] == 0)
+			philo->arg->fork[right_fork] = 1;
+		pthread_mutex_unlock (&(philo->arg->mutex[right_fork]));
+		pthread_mutex_lock (&(philo->arg->mutex[left_fork]));
+		if (philo->arg->fork[left_fork] == 0)
+			philo->arg->fork[left_fork] = 1;
+		pthread_mutex_unlock (&(philo->arg->mutex[left_fork]));
+		if (philo->arg->fork[left_fork] == 1 && philo->arg->fork[right_fork] == 1)
+		{
+			pthread_mutex_lock (&(philo->arg->mutex[right_fork]));
+			pthread_mutex_lock (&(philo->arg->mutex[left_fork]));
+			printf("%d is eating\n", philo->id);
+			usleep(100000);
+			philo->arg->fork[left_fork] = 0;
+			philo->arg->fork[right_fork] = 0;
+			pthread_mutex_unlock (&(philo->arg->mutex[right_fork]));
+			pthread_mutex_unlock (&(philo->arg->mutex[left_fork]));
+			usleep(300000);
+		}
 		usleep(10000);
-		pthread_mutex_unlock(para->arg->mutex[left_fork]);
-		pthread_mutex_unlock(para->arg->mutex[right_fork]);
-		usleep(200000);
 	}
 	return a;
 }
@@ -66,19 +80,17 @@ int main(int ac, char **av)
 	pthread_t	*ph;
 
 	ph = malloc(sizeof(ph) * arg.philo_num);
-	
 	arg.philo_num = ft_atoi(av[1]);
-	arg.time_to_die = ft_atoi(av[2]);
-	arg.time_to_eat = ft_atoi(av[3]);
-	// int time_to_sleep = ft_atoi(av[4]);
 
-	philo = malloc(sizeof(t_philo) * arg.philo_num);
-	arg.mutex = malloc(sizeof(pthread_mutex_t *) * arg.philo_num);
+	philo = malloc(sizeof(t_philo) * arg.philo_num + 1000);
+	arg.mutex = malloc(sizeof(pthread_mutex_t) * (arg.philo_num));
 	int i = -1;
-	while (++i < arg.philo_num)
-		arg.mutex[i] = malloc(sizeof(pthread_mutex_t));
-	arg.fork = calloc(arg.philo_num, sizeof(int));
-
+	while (++i < arg.philo_num + 1)
+		pthread_mutex_init(&arg.mutex[i], NULL);
+	arg.fork = malloc(sizeof(int) * (arg.philo_num + 1));
+	i = -1;
+	while (++i < arg.philo_num + 1)
+		arg.fork[i] = 0;
 	i = -1;
 	while (++i < arg.philo_num)
 	{
@@ -86,6 +98,8 @@ int main(int ac, char **av)
 		philo[i].left_fork = philo[i].id;
 		philo[i].right_fork = (philo[i].id % arg.philo_num) + 1;
 		philo[i].arg = &arg;
+		// printf("%d %d\n", philo[i].left_fork, philo[i].right_fork);
+		
 	}
 	i = -1;
 	while (++i < arg.philo_num)
