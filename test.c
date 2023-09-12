@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 18:53:05 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/12 21:23:22 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/09/12 22:28:21 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,14 +42,15 @@ int	ft_atoi(const char *str)
 
 void	get_right_fork(t_philo *philo)
 {
-	while(1)
+	while (1)
 	{
 		pthread_mutex_lock (&(philo->arg->mutex[philo->right_fork]));
 		if (philo->arg->fork[philo->right_fork] == 1)
 		{
 			printf("%d has taken a fork\n", philo->id);
 			philo->arg->fork[philo->right_fork] = 0;
-			break;
+			pthread_mutex_unlock(&(philo->arg->mutex[philo->right_fork]));
+			break ;
 		}
 		else
 		{
@@ -62,14 +63,15 @@ void	get_right_fork(t_philo *philo)
 
 void	get_left_fork(t_philo *philo)
 {
-	while(1)
+	while (1)
 	{
 		pthread_mutex_lock (&(philo->arg->mutex[philo->left_fork]));
 		if (philo->arg->fork[philo->left_fork] == 1)
 		{
 			printf("%d has taken a fork\n", philo->id);
 			philo->arg->fork[philo->left_fork] = 0;
-			break;
+			pthread_mutex_unlock(&(philo->arg->mutex[philo->left_fork]));
+			break ;
 		}
 		else
 		{
@@ -88,7 +90,7 @@ void	*do_something(void *a)
 	int	right_fork = philo->right_fork;
 	while (1)
 	{
-		if(philo->id % 2 == 0)
+		if (philo->id % 2 == 0)
 		{
 			get_left_fork(philo);
 			get_right_fork(philo);
@@ -96,29 +98,29 @@ void	*do_something(void *a)
 		else
 		{
 			get_right_fork(philo);
-			get_left_fork(philo);
+			get_left_fork(philo); 
 		}
-		if (philo->arg->fork[left_fork] == 0 && philo->arg->fork[right_fork] == 0)
+		gettimeofday(&time, NULL);
+		if ((time.tv_sec * 1000 + time.tv_usec / 1000) - philo->end_time > philo->arg->time_to_die)
 		{
-			gettimeofday(&time, NULL);
-			if((time.tv_sec * 1000 + time.tv_usec / 1000) - philo->end_time > philo->arg->time_to_die * 1000)
-			{
-				printf("%d died\n", philo->id);
-				pthread_mutex_unlock (&(philo->arg->mutex[right_fork]));
-				pthread_mutex_unlock (&(philo->arg->mutex[left_fork]));
-				return a;
-			}
-			printf("%d is eating\n", philo->id);
-			usleep(philo->arg->time_to_eat * 1000);
-			pthread_mutex_unlock (&(philo->arg->mutex[right_fork]));
-			pthread_mutex_unlock (&(philo->arg->mutex[left_fork]));
+			printf("%d died\n", philo->id);
 			philo->arg->fork[left_fork] = 1;
 			philo->arg->fork[right_fork] = 1;
-			printf("%d is sleeping\n", philo->id);
-			usleep(philo->arg->time_to_sleep * 1000);
+			pthread_mutex_unlock (&(philo->arg->mutex[right_fork]));
+			pthread_mutex_unlock (&(philo->arg->mutex[left_fork]));
+			return a;
 		}
+		philo->end_time = time.tv_sec * 1000 + time.tv_usec / 1000;
+		printf("%d번 철학자 %ld타임 is eating\n", philo->id, (time.tv_sec * 1000 + time.tv_usec / 1000) - philo->end_time);
+		usleep(philo->arg->time_to_eat * 1000);
+		pthread_mutex_unlock (&(philo->arg->mutex[right_fork]));
+		pthread_mutex_unlock (&(philo->arg->mutex[left_fork]));
+		philo->arg->fork[left_fork] = 1;
+		philo->arg->fork[right_fork] = 1;
+		printf("%d is sleeping\n", philo->id);
+		usleep(philo->arg->time_to_sleep * 100);
 	}
-	return a;
+	return	a;
 }
 
 int main(int ac, char **av)
