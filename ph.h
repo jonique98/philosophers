@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 18:47:41 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/11 23:07:15 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/09/12 23:28:54 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,10 @@ typedef struct s_philo
 	int					id;
 	int					left_fork;
 	int					right_fork;
+	long				start_time;
 	long				end_time;
+	struct timeval		time;
+
 	pthread_mutex_t		**mutex;
 	t_arg				*arg;
 }				t_philo;
