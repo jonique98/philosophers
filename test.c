@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 18:53:05 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/12 23:45:25 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/09/14 21:15:22 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,18 +40,19 @@ int	ft_atoi(const char *str)
 	return (num * minus);
 }
 
-void	catnap(t_philo *philo, int time)
+void	catnap(t_philo *philo, int t)
 {
+	struct timeval time;
 	int	i;
 	long ms;
 	i = 0;
-	gettimeofday(&(philo->time), NULL);
-	ms = philo->time.tv_sec * 1000 + philo->time.tv_usec / 1000;
-	while (i < 10)
+	gettimeofday(&time, NULL);
+	ms = time.tv_sec * 1000 + time.tv_usec / 1000;
+	while (i < 50)
 	{
-		usleep(time / 10);
-		gettimeofday(&(philo->time), NULL);
-		if (philo->time.tv_sec * 1000 + philo->time.tv_usec / 1000 - ms > philo->arg->time_to_sleep)
+		usleep(t / 50);
+		gettimeofday(&time, NULL);
+		if ((time.tv_sec * 1000 + time.tv_usec / 1000) - ms >= philo->arg->time_to_sleep)
 			return ;
 		i++;
 	}
@@ -65,7 +66,7 @@ void	get_right_fork(t_philo *philo)
 		if (philo->arg->fork[philo->right_fork] == 1)
 		{
 			gettimeofday(&(philo->time), NULL);
-			printf("%ld %d has taken a fork\n", (philo->time.tv_sec * 1000 + philo->time.tv_usec / 1000) - philo->end_time, philo->id);
+			printf("%ld %d has taken a fork\n", (philo->time.tv_sec * 1000 + philo->time.tv_usec / 1000) - philo->start_time, philo->id);
 			philo->arg->fork[philo->right_fork] = 0;
 			pthread_mutex_unlock(&(philo->arg->mutex[philo->right_fork]));
 			break ;
@@ -87,7 +88,7 @@ void	get_left_fork(t_philo *philo)
 		if (philo->arg->fork[philo->left_fork] == 1)
 		{
 			gettimeofday(&(philo->time), NULL);
-			printf("%ld %d has taken a fork\n", (philo->time.tv_sec * 1000 + philo->time.tv_usec / 1000) - philo->end_time, philo->id);
+			printf("%ld %d has taken a fork\n", (philo->time.tv_sec * 1000 + philo->time.tv_usec / 1000) - philo->start_time, philo->id);
 			philo->arg->fork[philo->left_fork] = 0;
 			pthread_mutex_unlock(&(philo->arg->mutex[philo->left_fork]));
 			break ;
@@ -129,9 +130,9 @@ int	dead_check(t_philo *philo)
 {
 	struct timeval time;
 	gettimeofday(&time, NULL);
-	if ((time.tv_sec * 1000 + time.tv_usec / 1000) - philo->start_time > philo->arg->time_to_die)
+	if ((time.tv_sec * 1000 + time.tv_usec / 1000) - philo->end_time > philo->arg->time_to_die)
 	{
-		printf("%ld, %d died\n", (time.tv_sec * 1000 + time.tv_usec / 1000) - philo->start_time, philo->id);
+		printf("%ld, %d died\n", (time.tv_sec * 1000 + time.tv_usec / 1000) - philo->end_time, philo->id);
 		drop_fork(philo);
 		return 1;
 	}
@@ -141,8 +142,8 @@ int	dead_check(t_philo *philo)
 void	philo_eat(t_philo *philo)
 {
 	gettimeofday(&(philo->time), NULL);
-	philo->start_time = philo->time.tv_sec * 1000 + philo->time.tv_usec / 1000;
-	printf("%ld %d is eating\n", (philo->time.tv_sec * 1000 + philo->time.tv_usec / 1000) - philo->end_time, philo->id);
+	philo->end_time = philo->time.tv_sec * 1000 + philo->time.tv_usec / 1000;
+	printf("%ld %d is eating\n", (philo->time.tv_sec * 1000 + philo->time.tv_usec / 1000) - philo->start_time, philo->id);
 	catnap(philo, philo->arg->time_to_eat * 1000);
 	drop_fork(philo);
 }
@@ -150,11 +151,9 @@ void	philo_eat(t_philo *philo)
 void	philo_sleep(t_philo *philo)
 {
 	gettimeofday(&(philo->time), NULL);
-	printf("%ld %d is sleeping\n", (philo->time.tv_sec * 1000 + philo->time.tv_usec / 1000) - philo->end_time, philo->id);
+	printf("%ld %d is sleeping\n", (philo->time.tv_sec * 1000 + philo->time.tv_usec / 1000) - philo->start_time, philo->id);
 	catnap(philo, philo->arg->time_to_sleep * 1000);
 }
-
-
 
 void	*do_something(void *a)
 {
@@ -177,42 +176,45 @@ int main(int ac, char **av)
 	t_philo		*philo;
 	pthread_t	*ph;
 
-	ph = malloc(sizeof(ph) * arg.philo_num);
 	arg.philo_num = ft_atoi(av[1]);
 	arg.time_to_die = ft_atoi(av[2]);
 	arg.time_to_eat = ft_atoi(av[3]);
 	arg.time_to_sleep = ft_atoi(av[4]);
 
-	philo = malloc(sizeof(t_philo) * arg.philo_num + 1000);
-	arg.mutex = malloc(sizeof(pthread_mutex_t) * (arg.philo_num));
+	ph = malloc(sizeof(pthread_t) * (arg.philo_num + 1));
+	arg.mutex = malloc(sizeof(pthread_mutex_t) * (arg.philo_num + 1));
+	arg.fork = malloc(sizeof(int) * (arg.philo_num + 1));
+
+	pthread_mutex_init(&arg.thread, NULL);
 	int i = -1;
 	while (++i < arg.philo_num + 1)
 		pthread_mutex_init(&arg.mutex[i], NULL);
-	arg.fork = malloc(sizeof(int) * (arg.philo_num + 1));
 	i = -1;
 	while (++i < arg.philo_num + 1)
 		arg.fork[i] = 1;
-	i = -1;
-	while (++i < arg.philo_num)
+
+	struct timeval time;
+	philo = malloc(sizeof(t_philo) * arg.philo_num);
+	gettimeofday(&time, NULL);
+	i = 0;
+	while (++i <= arg.philo_num)
 	{
 		philo[i].id = i + 1;
 		philo[i].left_fork = philo[i].id;
 		philo[i].right_fork = (philo[i].id % arg.philo_num) + 1;
 		philo[i].arg = &arg;
-	}
-	struct timeval time;
-
-	gettimeofday(&time, NULL);
-	i = -1;
-	while (++i < arg.philo_num)
-	{
 		philo[i].start_time = time.tv_sec * 1000 + time.tv_usec / 1000;
 		philo[i].end_time = time.tv_sec * 1000 + time.tv_usec / 1000;
 		pthread_create(&ph[i], NULL, do_something, &philo[i]);
 	}
+
 	i = -1;
 	while (++i < arg.philo_num)
 		pthread_join(ph[i], NULL);
+	free(ph);
+    free(arg.mutex);
+    free(arg.fork);
+    free(philo);
 }
 
 // pthread_mutex_t g_mutex;
