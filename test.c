@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 18:53:05 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/14 21:15:22 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/09/15 18:46:27 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,6 +169,77 @@ void	*do_something(void *a)
 	return	a;
 }
 
+void	init_arg(t_arg *arg)
+{
+	int	i;
+
+	i = -1;
+	arg->mutex = malloc(sizeof(pthread_mutex_t) * (arg->philo_num + 1));
+	arg->fork = malloc(sizeof(int) * (arg->philo_num + 1));
+	while (++i < arg->philo_num + 1)
+		pthread_mutex_init(&arg->mutex[i], NULL);
+	i = -1;
+	while (++i < arg->philo_num + 1)
+		arg->fork[i] = 1;
+}
+
+void	init_philo(t_philo *philo, t_arg *arg)
+{
+	int	i;
+	struct timeval time;
+
+	i = -1;
+	gettimeofday(&time, NULL);
+	while (++i < arg->philo_num)
+	{
+		philo[i].id = i + 1;
+		philo[i].left_fork = philo[i].id;
+		philo[i].right_fork = (philo[i].id % arg->philo_num) + 1;
+		philo[i].arg = arg;
+		philo[i].start_time = time.tv_sec * 1000 + time.tv_usec / 1000;
+		philo[i].end_time = time.tv_sec * 1000 + time.tv_usec / 1000;
+	}
+}
+
+void	philo_create_thread(t_philo *philo, pthread_t *ph)
+{
+	int	i;
+
+	i = -1;
+	while (++i < philo->arg->philo_num)
+		pthread_create(&ph[i], NULL, do_something, (void *)&philo[i]);
+}
+
+void	philo_thread_join(t_philo *philo, pthread_t *ph)
+{
+	int	i;
+
+	i = -1;
+	while (++i < philo->arg->philo_num)
+		pthread_join(ph[i], NULL);
+}
+
+void	parsing(t_arg *arg, char **av)
+{
+	arg->philo_num = ft_atoi(av[1]);
+	arg->time_to_die = ft_atoi(av[2]);
+	arg->time_to_eat = ft_atoi(av[3]);
+	arg->time_to_sleep = ft_atoi(av[4]);
+}
+
+void	ft_free(t_philo *philo, pthread_t *ph, t_arg arg)
+{
+	int	i;
+
+	i = -1;
+	while (++i < arg.philo_num + 1)
+		pthread_mutex_destroy(&arg.mutex[i]);
+	free(arg.fork);
+	free(philo);
+	free(ph);
+	system("leaks a.out");
+}
+
 int main(int ac, char **av)
 {
 	ac = 0;
@@ -176,81 +247,12 @@ int main(int ac, char **av)
 	t_philo		*philo;
 	pthread_t	*ph;
 
-	arg.philo_num = ft_atoi(av[1]);
-	arg.time_to_die = ft_atoi(av[2]);
-	arg.time_to_eat = ft_atoi(av[3]);
-	arg.time_to_sleep = ft_atoi(av[4]);
-
-	ph = malloc(sizeof(pthread_t) * (arg.philo_num + 1));
-	arg.mutex = malloc(sizeof(pthread_mutex_t) * (arg.philo_num + 1));
-	arg.fork = malloc(sizeof(int) * (arg.philo_num + 1));
-
-	pthread_mutex_init(&arg.thread, NULL);
-	int i = -1;
-	while (++i < arg.philo_num + 1)
-		pthread_mutex_init(&arg.mutex[i], NULL);
-	i = -1;
-	while (++i < arg.philo_num + 1)
-		arg.fork[i] = 1;
-
-	struct timeval time;
+	parsing(&arg, av);
 	philo = malloc(sizeof(t_philo) * arg.philo_num);
-	gettimeofday(&time, NULL);
-	i = 0;
-	while (++i <= arg.philo_num)
-	{
-		philo[i].id = i + 1;
-		philo[i].left_fork = philo[i].id;
-		philo[i].right_fork = (philo[i].id % arg.philo_num) + 1;
-		philo[i].arg = &arg;
-		philo[i].start_time = time.tv_sec * 1000 + time.tv_usec / 1000;
-		philo[i].end_time = time.tv_sec * 1000 + time.tv_usec / 1000;
-		pthread_create(&ph[i], NULL, do_something, &philo[i]);
-	}
-
-	i = -1;
-	while (++i < arg.philo_num)
-		pthread_join(ph[i], NULL);
-	free(ph);
-    free(arg.mutex);
-    free(arg.fork);
-    free(philo);
+	ph = malloc(sizeof(pthread_t) * (arg.philo_num));
+	init_arg(&arg);
+	init_philo(philo, &arg);
+	philo_create_thread(philo, ph);
+	philo_thread_join(philo, ph);
+	ft_free(philo, ph, arg);
 }
-
-// pthread_mutex_t g_mutex;
-// int g_cnt;
-
-// void *count(void *arg)
-// {
-// 	char *name;
-// 	int i = 0;
-
-// 	name = (char *)arg;
-// 	pthread_mutex_lock(&g_mutex);
-// 	g_cnt = 0;
-// 	while (i < 13)
-// 	{
-// 		printf("%s cnt : %d\n", name, g_cnt);
-// 		g_cnt++;
-// 		usleep(20000);
-// 		i++;
-// 	}
-// 	pthread_mutex_unlock(&g_mutex);
-// 	return ((void *)arg);
-// }
-
-// int main()
-// {
-// 	pthread_t pth1 = 0;
-// 	pthread_t pth2 = 0;
-// 	pthread_t pth3 = 0;
-
-// 	pthread_mutex_init(&g_mutex, NULL);
-// 	pthread_create(&pth1, NULL, count, (void *)"thread1");
-// 	pthread_create(&pth2, NULL, count, (void *)"thread2");
-// 	pthread_create(&pth3, NULL, count, (void *)"thread3");
-// 	pthread_join(pth1, NULL);
-// 	pthread_join(pth2, NULL);
-// 	pthread_join(pth3, NULL);
-// 	pthread_mutex_destroy(&g_mutex);
-// }

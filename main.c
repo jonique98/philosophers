@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <pthread.h>
  #include <sys/time.h>
+ #include <stdlib.h>
 
 pthread_mutex_t mutex;
 
@@ -22,17 +23,17 @@ while (1)
 
 int main() {
 
-    pthread_t thread[10000000];
+    pthread_t *thread;
     int i = 0;
 
-    while (i < 10000000)
+    thread = malloc(sizeof(pthread_t) * 100000);
+    while (i < 1000)
     {
-        pthread_mutex_init(&thread[i], NULL);
         pthread_create(&thread[i], NULL, hi, NULL);
         i++;
     }
     i = -1;
-    while (++i < 10000000)
+    while (++i < 1000)
         pthread_join(thread[i], NULL);
 
     pthread_mutex_destroy(&mutex);

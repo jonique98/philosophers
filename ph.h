@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 18:47:41 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/14 20:46:22 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/09/15 18:18:55 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ typedef struct s_arg
 	int	time_to_eat;
 	int	time_to_sleep;
 	pthread_mutex_t *mutex;
-	pthread_mutex_t thread;
 }				t_arg;
 
 typedef struct s_philo
