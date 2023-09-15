@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 18:53:05 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/15 20:08:43 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/09/15 21:55:10 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,23 +40,49 @@ int	ft_atoi(const char *str)
 	return (num * minus);
 }
 
-void	catnap(t_philo *philo, int t)
+void	drop_fork(t_philo *philo)
 {
-	struct timeval time;
-	int	i;
-	long ms;
+	pthread_mutex_lock (&(philo->arg->mutex[philo->right_fork]));
+	philo->arg->fork[philo->right_fork] = 1;
+	pthread_mutex_unlock (&(philo->arg->mutex[philo->right_fork]));
+	pthread_mutex_lock (&(philo->arg->mutex[philo->left_fork]));
+	philo->arg->fork[philo->left_fork] = 1;
+	pthread_mutex_unlock (&(philo->arg->mutex[philo->left_fork]));
+}
+
+void	catnap(int t, int limit)
+{
+	struct timeval	time;
+	int				i;
+	long			ms;
+
 	i = 0;
 	gettimeofday(&time, NULL);
 	ms = time.tv_sec * 1000 + time.tv_usec / 1000;
 	while (i < 50)
 	{
-		usleep(t / 50);
 		gettimeofday(&time, NULL);
-		if ((time.tv_sec * 1000 + time.tv_usec / 1000) - ms >= philo->arg->time_to_sleep)
+		if ((time.tv_sec * 1000 + time.tv_usec / 1000) - ms >= limit)
 			return ;
+		usleep(t / 60);
 		i++;
 	}
 }
+
+int	dead_check(t_philo *philo)
+{
+	struct timeval time;
+
+	gettimeofday(&time, NULL);
+	if ((time.tv_sec * 1000 + time.tv_usec / 1000 - philo->end_time > philo->arg->time_to_die))
+	{
+		philo->dead = 1;
+		drop_fork(philo);
+		return 1;
+	}
+	return 0;
+}
+
 
 void	get_right_fork(t_philo *philo)
 {
@@ -102,16 +128,6 @@ void	get_left_fork(t_philo *philo)
 	return ;
 }
 
-void	drop_fork(t_philo *philo)
-{
-	pthread_mutex_lock (&(philo->arg->mutex[philo->left_fork]));
-	philo->arg->fork[philo->left_fork] = 1;
-	pthread_mutex_unlock (&(philo->arg->mutex[philo->left_fork]));
-	pthread_mutex_lock (&(philo->arg->mutex[philo->right_fork]));
-	philo->arg->fork[philo->right_fork] = 1;
-	pthread_mutex_unlock (&(philo->arg->mutex[philo->right_fork]));
-}
-
 void	spin_lock(t_philo *philo)
 {
 	if (philo->id % 2 == 0)
@@ -126,27 +142,13 @@ void	spin_lock(t_philo *philo)
 	}
 }
 
-int	dead_check(t_philo *philo)
-{
-	struct timeval time;
-	gettimeofday(&time, NULL);
-	if ((time.tv_sec * 1000 + time.tv_usec / 1000 - philo->end_time > philo->arg->time_to_die) ||
-		(philo->arg->must_eat != -1 && philo->eat_count >= philo->arg->must_eat))
-	{
-		philo->dead = 1;
-		drop_fork(philo);
-		return 1;
-	}
-	return 0;
-}
-
 void	philo_eat(t_philo *philo)
 {
 	gettimeofday(&(philo->time), NULL);
 	philo->end_time = philo->time.tv_sec * 1000 + philo->time.tv_usec / 1000;
 	printf("%ld %d is eating\n", (philo->time.tv_sec * 1000 + philo->time.tv_usec / 1000) - philo->start_time, philo->id);
 	philo->eat_count++;
-	catnap(philo, philo->arg->time_to_eat * 1000);
+	catnap(philo->arg->time_to_eat * 1000, philo->arg->time_to_sleep);
 	drop_fork(philo);
 }
 
@@ -154,7 +156,7 @@ void	philo_sleep(t_philo *philo)
 {
 	gettimeofday(&(philo->time), NULL);
 	printf("%ld %d is sleeping\n", (philo->time.tv_sec * 1000 + philo->time.tv_usec / 1000) - philo->start_time, philo->id);
-	catnap(philo, philo->arg->time_to_sleep * 1000);
+	catnap(philo->arg->time_to_sleep * 1000, philo->arg->time_to_sleep);
 }
 
 void	philo_think(t_philo *philo)
@@ -170,7 +172,7 @@ void	*do_something(void *a)
 	{
 		spin_lock(philo);
 		if (dead_check(philo))
-			return 0;
+			return a;
 		philo_eat(philo);
 		philo_sleep(philo);
 		philo_think(philo);
@@ -205,6 +207,8 @@ void	init_philo(t_philo *philo, t_arg *arg)
 		philo[i].left_fork = philo[i].id;
 		philo[i].right_fork = (philo[i].id % arg->philo_num) + 1;
 		philo[i].arg = arg;
+		philo[i].eat_count = 0;
+		philo[i].dead = 0;
 		philo[i].start_time = time.tv_sec * 1000 + time.tv_usec / 1000;
 		philo[i].end_time = time.tv_sec * 1000 + time.tv_usec / 1000;
 	}
@@ -268,10 +272,9 @@ void	ft_free(t_philo *philo, pthread_t *ph, t_arg arg)
 void	*monitoring(void *a)
 {
 	int		i;
-	int		cnt;
 	t_philo	*philo;
+	struct timeval time;
 
-	cnt = 0;
 	philo = (t_philo *)a;
 	while (1)
 	{
@@ -280,14 +283,11 @@ void	*monitoring(void *a)
 		{
 			if (philo[i].dead == 1)
 			{
-				gettimeofday(&(philo->time), NULL);
-				printf("%ld %d died\n", (philo->time.tv_sec * 1000 + philo->time.tv_usec / 1000) - philo->start_time, philo[i].id);
-				philo[i].dead = 2;
-				cnt++;
+				gettimeofday(&time, NULL);
+				printf("%ld %d died\n", (time.tv_sec * 1000 + time.tv_usec / 1000) - philo->start_time, philo[i].id);
+				exit(0);
 			}
 		}
-		if (cnt == philo->arg->philo_num)
-			return (0);
 	}
 	return a;
 }
