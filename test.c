@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 18:53:05 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/15 23:46:50 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/09/15 23:58:33 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ int	dead_check(t_philo *philo)
 {
 	if(philo->arg->dead == 1)
 		return 1;
-	return 0
+	return 0;
 }
 
 
@@ -97,7 +97,7 @@ int	get_right_fork(t_philo *philo)
 	while (1)
 	{
 		pthread_mutex_lock (&(philo->arg->mutex[philo->right_fork]));
-		if(dead(philo))
+		if(dead(philo) || dead_check(philo) == FAIL)
 		{
 			pthread_mutex_unlock(&(philo->arg->mutex[philo->right_fork]));
 			return FAIL;
@@ -124,7 +124,7 @@ int	get_left_fork(t_philo *philo)
 	while (1)
 	{
 		pthread_mutex_lock (&(philo->arg->mutex[philo->left_fork]));
-		if(dead(philo))
+		if(dead(philo) || dead_check(philo) == FAIL)
 		{
 			pthread_mutex_unlock(&(philo->arg->mutex[philo->right_fork]));
 			return FAIL;
@@ -165,28 +165,37 @@ int	spin_lock(t_philo *philo)
 	return 0;
 }
 
-void	philo_eat(t_philo *philo)
+int	philo_eat(t_philo *philo)
 {
 	gettimeofday(&(philo->time), NULL);
 	philo->end_time = philo->time.tv_sec * 1000 + philo->time.tv_usec / 1000;
+	if(dead_check(philo) == FAIL)
+		return FAIL;
 	printf("%ld %d is eating\n", (philo->time.tv_sec * 1000 + philo->time.tv_usec / 1000) - philo->start_time, philo->id);
 	philo->eat_count++;
 	catnap(philo->arg->time_to_eat * 1000, philo->arg->time_to_eat);
 	drop_fork(philo);
+	return 0;
 }
 
-void	philo_sleep(t_philo *philo)
+int	philo_sleep(t_philo *philo)
 {
 	gettimeofday(&(philo->time), NULL);
+	if(dead_check(philo) == FAIL)
+		return FAIL;
 	printf("%ld %d is sleeping\n", (philo->time.tv_sec * 1000 + philo->time.tv_usec / 1000) - philo->start_time, philo->id);
 	catnap(philo->arg->time_to_sleep * 1000, philo->arg->time_to_sleep);
+	return 0;
 }
 
-void	philo_think(t_philo *philo)
+int	philo_think(t_philo *philo)
 {
 	gettimeofday(&(philo->time), NULL);
+	if(dead_check(philo) == FAIL)
+		return FAIL;
 	printf("%ld %d is thinking\n", (philo->time.tv_sec * 1000 + philo->time.tv_usec / 1000) - philo->start_time, philo->id);
 	usleep(100);
+	return 0;
 }
 
 void	*do_something(void *a)
@@ -198,9 +207,12 @@ void	*do_something(void *a)
 			return a;
 		if (dead(philo) == FAIL)
 			return a;
-		philo_eat(philo);
-		philo_sleep(philo);
-		philo_think(philo);
+		if (philo_eat(philo) == FAIL)
+			return a;
+		if (philo_sleep(philo) == FAIL)
+			return a;
+		if (philo_think(philo) == FAIL)
+			return a;
 	}
 	return a;
 }
@@ -310,7 +322,7 @@ void	*monitoring(void *a)
 			{
 				gettimeofday(&time, NULL);
 				printf("%ld %d died\n", (time.tv_sec * 1000 + time.tv_usec / 1000) - philo->start_time, philo[i].id);
-				exit(0);
+				return a;
 			}
 		}
 	}
