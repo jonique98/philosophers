@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 18:47:41 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/15 23:38:56 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/09/17 03:08:37 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 #include <sys/time.h>\
 
 #define FAIL 1
+#define DEAD 1
 
 // struct timeval 
 // {
@@ -27,32 +28,42 @@
 //     suseconds_t tv_usec;
 // };
 
+
+typedef struct s_mutex
+{
+	int				*fork;
+	pthread_mutex_t	*fork_mutex;
+	int 			dead;
+	pthread_mutex_t	dead_mutex;
+}				t_mutex;
+
 typedef struct s_arg
 {
-	int *fork;
 	int	philo_num;
 	int	time_to_die;
 	int	time_to_eat;
 	int	time_to_sleep;
 	int	must_eat;
-	int	dead;
-	pthread_mutex_t *mutex;
 }				t_arg;
 
-typedef struct s_philo
+typedef struct s_data
 {
-	int					id;
 	int					left_fork;
 	int					right_fork;
 	int					eat_count;
 	long				start_time;
 	long				end_time;
-	struct timeval		time;
+}				t_data;
+
+typedef struct s_philo
+{
+	int					id;
 	t_arg				*arg;
+	t_data				*data;
+	t_mutex				*mutex;
 }				t_philo;
 
 
-void	*monitor(void *a);
 
 
 #endif
