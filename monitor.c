@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/17 04:07:16 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/17 04:22:26 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/09/17 04:34:47 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,8 @@ void	*monitoring(void *a)
 			if (dead_check(&philo[i]) == DEAD)
 				return (a);
 			pthread_mutex_lock(&(philo[i].mutex->dead_mutex));
-			if (get_time() - (philo[i].data->end_time) > philo[i].arg->time_to_die)
+			if ((philo[i].arg->must_eat != -1 && philo[i].data->eat_count == philo[i].arg->must_eat) ||
+			 get_time() - (philo[i].data->end_time) > philo[i].arg->time_to_die)
 			{
 				philo[i].mutex->dead = 1;
 				printf("%d %d died\n", get_time() - philo[i].data->start_time, philo[i].id);

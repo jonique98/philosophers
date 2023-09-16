@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/17 04:08:31 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/17 04:21:22 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/09/17 04:29:40 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,32 @@ t_arg	*init_arg(int ac, char **av)
 			return (0);
 		}
 		arg->time_to_die = ft_atoi(av[2]);
+		if (arg->time_to_die < 1)
+		{
+			printf("Error: Wrong time to die\n");
+			return (0);
+		}
 		arg->time_to_eat = ft_atoi(av[3]);
+		if (arg->time_to_eat < 1)
+		{
+			printf("Error: Wrong time to eat\n");
+			return (0);
+		}
 		arg->time_to_sleep = ft_atoi(av[4]);
+		if (arg->time_to_sleep < 1)
+		{
+			printf("Error: Wrong time to sleep\n");
+			return (0);
+		}
 		if (ac == 6)
+		{
 			arg->must_eat = ft_atoi(av[5]);
+			if(arg->must_eat < 1)
+			{
+				printf("Error: Wrong number of times each philosopher must eat\n");
+				return (0);
+			}
+		}
 		else
 			arg->must_eat = -1;
 	}
