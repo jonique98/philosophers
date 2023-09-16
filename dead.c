@@ -1,28 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   dead_and_print.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/09/05 18:53:05 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/17 04:12:17 by sumjo            ###   ########.fr       */
+/*   Created: 2023/09/17 04:10:25 by sumjo             #+#    #+#             */
+/*   Updated: 2023/09/17 04:10:29 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ph.h"
 
-int	main(int ac, char **av)
+int	dead_check(t_philo *philo)
 {
-	t_philo		*philo;
-	pthread_t	*thread;
-	pthread_t	monitor_thread;
+	pthread_mutex_lock(&(philo->mutex->dead_mutex));
+	if (philo->mutex->dead == DEAD)
+	{
+		pthread_mutex_unlock(&(philo->mutex->dead_mutex));
+		return (DEAD);
+	}
+	pthread_mutex_unlock(&(philo->mutex->dead_mutex));
+	return (0);
+}
 
-	if (init(&philo, ac, av) == FAIL)
-		return (1);
-	philo_create_thread(philo, &thread);
-	pthread_create(&monitor_thread, NULL, monitoring, (void *)philo);
-	philo_pthread_join(philo, thread, &monitor_thread);
-	ft_free(philo);
+int	print(t_philo *philo, char *str)
+{
+	if (dead_check(philo) == DEAD)
+		return (FAIL);
+	printf("%d %d %s", get_time() - philo->data->start_time, philo->id, str);
 	return (0);
 }

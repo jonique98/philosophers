@@ -8,7 +8,8 @@ RM			= rm -f
 INCS_DIR	= ./
 SRCS_DIR	= ./
 
-SRC			= test.c
+SRC			= action.c init.c dead.c main.c utils.c \
+				monitor.c philo.c philosophers.c \
 
 SRCS		=	$(addprefix $(SRCS_DIR), $(SRC))
 OBJS		=	$(SRCS:.c=.o)
