@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 18:47:41 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/17 03:08:37 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/09/17 03:52:26 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,8 +51,8 @@ typedef struct s_data
 	int					left_fork;
 	int					right_fork;
 	int					eat_count;
-	long				start_time;
-	long				end_time;
+	int				start_time;
+	int				end_time;
 }				t_data;
 
 typedef struct s_philo
