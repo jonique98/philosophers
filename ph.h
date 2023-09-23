@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 18:47:41 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/17 04:22:52 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/09/23 21:50:20 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,9 @@ typedef struct s_philo
 
 int			ft_atoi(const char *str);
 int			get_time(void);
-void		ft_free(t_philo *philo);
+int			free_philo(t_philo *philo, int i);
+void		ft_free(void *ptr1, void *ptr2, void *ptr3);
+int			parsing(char **av, t_arg *arg);
 
 void		*philosophers(void *a);
 pthread_t	*philo_create_thread(t_philo *philo, pthread_t **thread);

@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/17 04:05:45 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/17 04:40:08 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/09/23 21:51:16 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,12 +24,14 @@ int	get_right_fork(t_philo *philo)
 			if (print(philo, "has taken a fork\n") == FAIL)
 				return (DEAD);
 			philo->mutex->fork[philo->data->right_fork] = 0;
-			pthread_mutex_unlock(&philo->mutex->fork_mutex[philo->data->right_fork]);
+			pthread_mutex_unlock
+			(&philo->mutex->fork_mutex[philo->data->right_fork]);
 			break ;
 		}
 		else
 		{
-			pthread_mutex_unlock(&philo->mutex->fork_mutex[philo->data->right_fork]);
+			pthread_mutex_unlock
+			(&philo->mutex->fork_mutex[philo->data->right_fork]);
 			usleep(1000);
 		}
 	}
@@ -48,12 +50,14 @@ int	get_left_fork(t_philo *philo)
 			if (print(philo, "has taken a fork\n") == FAIL)
 				return (DEAD);
 			philo->mutex->fork[philo->data->left_fork] = 0;
-			pthread_mutex_unlock(&philo->mutex->fork_mutex[philo->data->left_fork]);
+			pthread_mutex_unlock
+			(&philo->mutex->fork_mutex[philo->data->left_fork]);
 			break ;
 		}
 		else
 		{
-			pthread_mutex_unlock(&philo->mutex->fork_mutex[philo->data->left_fork]);
+			pthread_mutex_unlock
+			(&philo->mutex->fork_mutex[philo->data->left_fork]);
 			usleep(1000);
 		}
 	}

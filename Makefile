@@ -8,7 +8,7 @@ RM			= rm -f
 INCS_DIR	= ./
 SRCS_DIR	= ./
 
-SRC			= main.c action.c init.c dead.c util.c \
+SRC			= main.c action.c init.c print.c util.c \
 				monitor.c philosophers.c spinlock.c\
 
 SRCS		=	$(addprefix $(SRCS_DIR), $(SRC))

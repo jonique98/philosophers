@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/17 04:08:31 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/17 04:29:40 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/09/23 21:50:26 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,49 +19,13 @@ t_arg	*init_arg(int ac, char **av)
 	arg = malloc(sizeof(t_arg));
 	if (arg == 0)
 		return (0);
-	if (ac == 5 || ac == 6)
-	{
-		arg->philo_num = ft_atoi(av[1]);
-		if (arg->philo_num < 1)
-		{
-			printf("Error: Wrong number of philosophers\n");
-			return (0);
-		}
-		arg->time_to_die = ft_atoi(av[2]);
-		if (arg->time_to_die < 1)
-		{
-			printf("Error: Wrong time to die\n");
-			return (0);
-		}
-		arg->time_to_eat = ft_atoi(av[3]);
-		if (arg->time_to_eat < 1)
-		{
-			printf("Error: Wrong time to eat\n");
-			return (0);
-		}
-		arg->time_to_sleep = ft_atoi(av[4]);
-		if (arg->time_to_sleep < 1)
-		{
-			printf("Error: Wrong time to sleep\n");
-			return (0);
-		}
-		if (ac == 6)
-		{
-			arg->must_eat = ft_atoi(av[5]);
-			if(arg->must_eat < 1)
-			{
-				printf("Error: Wrong number of times each philosopher must eat\n");
-				return (0);
-			}
-		}
-		else
-			arg->must_eat = -1;
-	}
-	else
+	if (ac != 5 && ac != 6)
 	{
 		printf("Error: Wrong number of arguments\n");
 		return (0);
 	}
+	if (parsing(av, arg) == FAIL)
+		return (0);
 	return (arg);
 }
 
@@ -88,9 +52,10 @@ t_mutex	*init_mutex(t_arg *arg)
 		return (0);
 	mutex->dead = 0;
 	pthread_mutex_init(&(mutex->dead_mutex), NULL);
-	mutex->fork = malloc(sizeof(pthread_mutex_t) * (arg->philo_num + 1));
+	mutex->fork = malloc(sizeof(int) * (arg->philo_num + 1));
 	if (mutex->fork == 0)
 	{
+		pthread_mutex_destroy(&(mutex->dead_mutex));
 		free(mutex);
 		return (0);
 	}
@@ -117,7 +82,7 @@ int	init_philo(t_philo *philo, t_arg *arg, t_mutex *mutex)
 		philo[i].data = init_data(arg, i);
 		if (philo[i].data == 0)
 		{
-			ft_free(philo);
+			free_philo(philo, i);
 			return (FAIL);
 		}
 	}
@@ -135,12 +100,16 @@ int	init(t_philo **philo, int ac, char **av)
 	mutex = init_mutex(arg);
 	if (mutex == 0)
 	{
-		free(arg);
+		ft_free(arg, 0, 0);
 		return (FAIL);
 	}
 	*philo = malloc(sizeof(t_philo) * arg->philo_num);
 	if (*philo == 0)
+	{
+		ft_free(arg, mutex->fork, mutex->fork_mutex);
+		free(mutex);
 		return (FAIL);
+	}
 	init_philo(*philo, arg, mutex);
 	return (0);
 }

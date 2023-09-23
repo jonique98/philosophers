@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 18:53:05 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/17 04:12:17 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/09/23 21:43:59 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,10 @@ int	main(int ac, char **av)
 
 	if (init(&philo, ac, av) == FAIL)
 		return (1);
-	philo_create_thread(philo, &thread);
+	if (philo_create_thread(philo, &thread) == 0)
+		return (free_philo(philo, philo[0].arg->philo_num));
 	pthread_create(&monitor_thread, NULL, monitoring, (void *)philo);
 	philo_pthread_join(philo, thread, &monitor_thread);
-	ft_free(philo);
+	free_philo(philo, philo[0].arg->philo_num);
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/17 04:11:41 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/17 04:15:41 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/09/23 21:50:46 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,8 @@ pthread_t	*philo_create_thread(t_philo *philo, pthread_t **thread)
 	int			ms;
 
 	*thread = malloc(sizeof(pthread_t) * philo->arg->philo_num);
+	if (!*thread)
+		return (0);
 	i = -1;
 	while (++i < philo[0].arg->philo_num)
 	{
@@ -46,7 +48,8 @@ pthread_t	*philo_create_thread(t_philo *philo, pthread_t **thread)
 	return (*thread);
 }
 
-void	philo_pthread_join(t_philo *philo, pthread_t *thread, pthread_t *monitor_thread)
+void	philo_pthread_join(t_philo *philo, pthread_t *thread,
+pthread_t *monitor_thread)
 {
 	int	i;
 
