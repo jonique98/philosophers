@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ph.h                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: josumin <josumin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 18:47:41 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/23 21:50:20 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/09/26 10:29:26 by josumin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,8 @@ int			parsing(char **av, t_arg *arg);
 
 void		*philosophers(void *a);
 pthread_t	*philo_create_thread(t_philo *philo, pthread_t **thread);
-void		philo_pthread_join(t_philo *philo, pthread_t *thread, pthread_t *monitor_thread);
+void		philo_pthread_join(t_philo *philo, pthread_t *thread,
+				pthread_t *monitor_thread);
 
 int			get_right_fork(t_philo *philo);
 int			get_left_fork(t_philo *philo);

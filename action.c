@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   action.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: josumin <josumin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/17 04:06:34 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/17 04:39:38 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/09/26 10:28:33 by josumin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ int	philo_think(t_philo *philo)
 {
 	if (print(philo, "is thinking\n") == FAIL)
 		return (DEAD);
-	usleep(1000);
+	usleep(100);
 	return (0);
 }
 
@@ -46,11 +46,11 @@ void	catnap(int t, int limit)
 
 	i = 0;
 	ms = get_time();
-	while (i < 50)
+	while (i < 100)
 	{
+		usleep(t / 100);
 		if (get_time() - ms >= limit)
 			return ;
-		usleep(t / 50);
 		i++;
 	}
 }

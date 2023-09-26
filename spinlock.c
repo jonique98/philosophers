@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   spinlock.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: josumin <josumin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/17 04:05:45 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/23 21:51:16 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/09/26 10:24:58 by josumin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ int	get_right_fork(t_philo *philo)
 		{
 			pthread_mutex_unlock
 			(&philo->mutex->fork_mutex[philo->data->right_fork]);
-			usleep(1000);
+			usleep(100);
 		}
 	}
 	return (0);
@@ -58,7 +58,7 @@ int	get_left_fork(t_philo *philo)
 		{
 			pthread_mutex_unlock
 			(&philo->mutex->fork_mutex[philo->data->left_fork]);
-			usleep(1000);
+			usleep(100);
 		}
 	}
 	return (0);
