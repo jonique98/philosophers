@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ph.h                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josumin <josumin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 18:47:41 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/26 10:29:26 by josumin          ###   ########.fr       */
+/*   Updated: 2023/09/26 21:51:08 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ int			print(t_philo *philo, char *str);
 int			philo_eat(t_philo *philo);
 int			philo_sleep(t_philo *philo);
 int			philo_think(t_philo *philo);
-void		catnap(int t, int limit);
+void		catnap(int current_time, int t, int limit);
 void		drop_fork(t_philo *philo);
 
 #endif

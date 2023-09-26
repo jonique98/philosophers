@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/17 04:10:25 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/23 21:56:18 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/09/26 22:09:29 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,14 @@
 
 int	print(t_philo *philo, char *str)
 {
-	if (dead_check(philo) == DEAD)
+	pthread_mutex_lock(&(philo->mutex->dead_mutex));
+	if (philo->mutex->dead != DEAD)
+		printf("%d %d %s\n", get_time() - philo->data->start_time, philo->id, str);
+	else
+	{
+		pthread_mutex_unlock(&(philo->mutex->dead_mutex));
 		return (FAIL);
-	printf("%d %d %s", get_time() - philo->data->start_time, philo->id, str);
+	}
+	pthread_mutex_unlock(&(philo->mutex->dead_mutex));
 	return (0);
 }

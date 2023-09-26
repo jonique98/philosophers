@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   action.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josumin <josumin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/17 04:06:34 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/26 10:28:33 by josumin          ###   ########.fr       */
+/*   Updated: 2023/09/26 22:05:30 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,43 +15,38 @@
 int	philo_eat(t_philo *philo)
 {
 	philo->data->end_time = get_time();
-	if (print(philo, "is eating\n") == FAIL)
+	if (print(philo, "is eating") == FAIL)
 		return (DEAD);
 	philo->data->eat_count++;
-	catnap(philo->arg->time_to_eat * 1000, philo->arg->time_to_eat);
+	catnap(get_time(), philo->arg->time_to_eat * 1000, philo->arg->time_to_eat);
 	drop_fork(philo);
 	return (0);
 }
 
 int	philo_sleep(t_philo *philo)
 {
-	if (print(philo, "is sleeping\n") == FAIL)
+	if (print(philo, "is sleeping") == FAIL)
 		return (DEAD);
-	catnap(philo->arg->time_to_sleep * 1000, philo->arg->time_to_sleep);
+	catnap(get_time(), philo->arg->time_to_sleep * 1000, philo->arg->time_to_sleep);
 	return (0);
 }
 
 int	philo_think(t_philo *philo)
 {
-	if (print(philo, "is thinking\n") == FAIL)
+	if (print(philo, "is thinking") == FAIL)
 		return (DEAD);
-	usleep(100);
+	usleep(1000);
 	return (0);
 }
 
-void	catnap(int t, int limit)
+void	catnap(int current_time, int t, int limit)
 {
-	int	i;
-	int	ms;
-
-	i = 0;
-	ms = get_time();
-	while (i < 100)
+	usleep(t / 2);
+	while (1)
 	{
-		usleep(t / 100);
-		if (get_time() - ms >= limit)
+		if (get_time() - current_time >= limit)
 			return ;
-		i++;
+		usleep(100);
 	}
 }
 

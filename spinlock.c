@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   spinlock.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josumin <josumin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/17 04:05:45 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/26 10:24:58 by josumin          ###   ########.fr       */
+/*   Updated: 2023/09/26 21:38:28 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int	get_right_fork(t_philo *philo)
 		pthread_mutex_lock(&philo->mutex->fork_mutex[philo->data->right_fork]);
 		if (philo->mutex->fork[philo->data->right_fork] == 1)
 		{
-			if (print(philo, "has taken a fork\n") == FAIL)
+			if (print(philo, "has taken a fork") == FAIL)
 				return (DEAD);
 			philo->mutex->fork[philo->data->right_fork] = 0;
 			pthread_mutex_unlock
@@ -47,7 +47,7 @@ int	get_left_fork(t_philo *philo)
 		pthread_mutex_lock (&philo->mutex->fork_mutex[philo->data->left_fork]);
 		if (philo->mutex->fork[philo->data->left_fork] == 1)
 		{
-			if (print(philo, "has taken a fork\n") == FAIL)
+			if (print(philo, "has taken a fork") == FAIL)
 				return (DEAD);
 			philo->mutex->fork[philo->data->left_fork] = 0;
 			pthread_mutex_unlock
