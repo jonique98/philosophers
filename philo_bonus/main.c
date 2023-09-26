@@ -181,7 +181,7 @@ int main(int ac, char **av)
 	if (arg == 0)
 		return (FAIL);
 
-	forks = sem_open("forks", O_CREAT, 0644, 10);
+	forks = sem_open("hi", O_CREAT, 0644, arg->philo_num);
 	binarysemaphore = sem_open("binarysemaphore",O_CREAT | O_EXCL, 0644, 1);
 
 	i = -1;

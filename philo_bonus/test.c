@@ -10,7 +10,8 @@ int main() {
     const char *semaphoreName = "/my_semaphore";
     
     // 세마포어 생성 또는 열기, 초기 값은 5로 설정
-    semaphore = sem_open(semaphoreName, O_EXCL, 0666, 5);
+    semaphore = sem_open("", O_CREAT | O_EXCL, 0777, 5);
+
 
     if (semaphore == SEM_FAILED) {
         perror("Semaphore creation/open failed");
