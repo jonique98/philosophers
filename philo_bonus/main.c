@@ -144,12 +144,8 @@ void	philosophers(t_arg *arg, int id, sem_t *forks, sem_t *binarysemaphore)
 
 	while (1)
 	{
-		sem_wait(binarysemaphore);
-		sem_wait(forks);
 		sem_wait(forks);
 		philo_eat(&philo);
-		sem_post(binarysemaphore);
-		sem_post(forks);
 		sem_post(forks);
 		philo_sleep(&philo);
 		philo_think(&philo);
@@ -185,8 +181,8 @@ int main(int ac, char **av)
 	if (arg == 0)
 		return (FAIL);
 
-	forks = sem_open("forks", O_CREAT, 0644, arg->philo_num);
-	binarysemaphore = sem_open("binarysemaphore", O_CREAT, 0644, 1);
+	forks = sem_open("forks", O_CREAT, 0644, 10);
+	binarysemaphore = sem_open("binarysemaphore",O_CREAT | O_EXCL, 0644, 1);
 
 	i = -1;
 	while (++i < arg->philo_num)
