@@ -1,28 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   print.c                                            :+:      :+:    :+:   */
+/*   forks.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/09/17 04:10:25 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/27 21:53:47 by sumjo            ###   ########.fr       */
+/*   Created: 2023/09/27 21:35:06 by sumjo             #+#    #+#             */
+/*   Updated: 2023/09/27 21:37:26 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ph.h"
+#include "philo_bonus.h"
 
-int	print(t_philo *philo, char *str)
+void	get_left_fork(t_philo *philo)
 {
-	pthread_mutex_lock(&(philo->mutex->dead_mutex));
-	if (philo->mutex->dead != DEAD)
-		printf("%d %d %s\n", get_time() - philo->data->start_time,
-			philo->id, str);
-	else
-	{
-		pthread_mutex_unlock(&(philo->mutex->dead_mutex));
-		return (FAIL);
-	}
-	pthread_mutex_unlock(&(philo->mutex->dead_mutex));
-	return (0);
+	sem_wait(philo->semaphores->forks);
+	if (print(philo, "has taken a fork") == FAIL)
+		exit (1);
+}
+
+void	get_right_fork(t_philo *philo)
+{
+	sem_wait(philo->semaphores->forks);
+	if (print(philo, "has taken a fork") == FAIL)
+		exit (1);
+}
+
+void	drop_forks(t_philo *philo)
+{
+	sem_post(philo->semaphores->forks);
+	sem_post(philo->semaphores->forks);
 }

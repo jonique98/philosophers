@@ -1,12 +1,26 @@
-#ifndef PH_BONUS_H
-# define PH_BONUS_H
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philo_bonus.h                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/09/27 21:47:17 by sumjo             #+#    #+#             */
+/*   Updated: 2023/09/27 21:48:14 by sumjo            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/time.h>
-#include <sys/wait.h>
-#include <semaphore.h>
+#ifndef PHILO_BONUS_H
+# define PHILO_BONUS_H
+
+# include <stdio.h>
+# include <stdlib.h>
+# include <unistd.h>
+# include <sys/time.h>
+# include <sys/wait.h>
+# include <semaphore.h>
+# include <pthread.h>
+# include <signal.h>
 
 # define FAIL 1
 # define DEAD 1
@@ -42,5 +56,24 @@ typedef struct s_philo
 
 }				t_philo;
 
-#endif
+void			init_philo(t_philo **philo, pid_t **pid_list,
+					int ac, char **av);
+int				print(t_philo *philo, char *str);
+int				monitoring(t_philo *philo);
+int				get_time(void);
+void			catnap(int start_time, int time, int time_to);
+void			philo_eat(t_philo *philo);
+void			philo_sleep(t_philo *philo);
+void			philo_think(t_philo *philo);
+void			action(t_philo *philo);
+void			get_left_fork(t_philo *philo);
+void			get_right_fork(t_philo *philo);
+void			drop_forks(t_philo *philo);
+void			init_data(t_philo *philo);
+t_arg			*init_arg(int ac, char **av);
+t_semaphores	*init_semaphores(t_arg *arg);
+void			wait_child(pid_t *pid_list, int philo_num);
+int				ft_atoi(const char *str);
+int				parsing(char **av, t_arg *arg);
 
+#endif

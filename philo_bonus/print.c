@@ -5,24 +5,18 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/09/17 04:10:25 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/27 21:53:47 by sumjo            ###   ########.fr       */
+/*   Created: 2023/09/27 21:38:09 by sumjo             #+#    #+#             */
+/*   Updated: 2023/09/27 21:48:56 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ph.h"
+#include "philo_bonus.h"
 
 int	print(t_philo *philo, char *str)
 {
-	pthread_mutex_lock(&(philo->mutex->dead_mutex));
-	if (philo->mutex->dead != DEAD)
-		printf("%d %d %s\n", get_time() - philo->data->start_time,
-			philo->id, str);
-	else
-	{
-		pthread_mutex_unlock(&(philo->mutex->dead_mutex));
-		return (FAIL);
-	}
-	pthread_mutex_unlock(&(philo->mutex->dead_mutex));
+	sem_wait(philo->semaphores->dead);
+	printf("%d %d %s\n", get_time() - philo->data->start_time,
+		philo->id, str);
+	sem_post(philo->semaphores->dead);
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/17 04:06:34 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/26 22:05:30 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/09/27 21:53:55 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@ int	philo_sleep(t_philo *philo)
 {
 	if (print(philo, "is sleeping") == FAIL)
 		return (DEAD);
-	catnap(get_time(), philo->arg->time_to_sleep * 1000, philo->arg->time_to_sleep);
+	catnap(get_time(), philo->arg->time_to_sleep * 1000,
+		philo->arg->time_to_sleep);
 	return (0);
 }
 
