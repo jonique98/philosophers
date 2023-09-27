@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/27 21:32:27 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/27 21:38:40 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/09/27 23:43:13 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,8 +70,11 @@ void	wait_child(pid_t *pid_list, int philo_num)
 		waitpid(-1, &status, 0);
 		if (status == 256)
 		{
-			while (++i < philo_num)
+			while (i < philo_num)
+			{
 				kill(pid_list[i], SIGKILL);
+				i++;
+			}
 		}
 	}
 }
