@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/27 21:36:48 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/27 21:52:56 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/09/27 22:10:57 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ int	monitoring(t_philo *philo)
 			exit (DEAD);
 		}
 		sem_post(philo->semaphores->dead);
-		sleep(100);
+		usleep(50);
 	}
 	return (0);
 }

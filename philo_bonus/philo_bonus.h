@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/27 21:47:17 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/27 21:48:14 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/09/27 21:57:45 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,6 @@ t_arg			*init_arg(int ac, char **av);
 t_semaphores	*init_semaphores(t_arg *arg);
 void			wait_child(pid_t *pid_list, int philo_num);
 int				ft_atoi(const char *str);
-int				parsing(char **av, t_arg *arg);
+void			parsing(char **av, t_arg *arg);
 
 #endif
