@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/27 21:35:23 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/27 21:59:52 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/09/27 22:33:31 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ void	init_data(t_philo *philo)
 	if (philo->data == 0)
 		exit (1);
 	philo->data->start_time = get_time();
-	philo->data->end_time = 0;
+	philo->data->end_time = get_time();
 	philo->data->eat_count = 0;
 }
 
