@@ -1,10 +1,4 @@
 #include "philo_bonus.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/time.h>
-#include <sys/wait.h>
-#include <semaphore.h>
 
 int	ft_atoi(const char *str)
 {
@@ -44,9 +38,17 @@ int	get_time(void)
 
 int	print(t_philo *philo, char *str)
 {
-	
-	printf("%d %d %s\n", get_time() - philo->data->start_time, philo->id, str);
+	if (sem_wait(philo->semaphores->dead) != -1)
+		printf("%d %d %s\n", get_time() - philo->data->start_time, philo->id, str);
+	else
+		return (FAIL);
 	return (0);
+}
+
+void	drop_forks(t_philo *philo)
+{
+	sem_post(philo->semaphores->forks);
+	sem_post(philo->semaphores->forks);
 }
 
 void	catnap(int current_time, int t, int limit)
@@ -85,7 +87,6 @@ int	parsing(char **av, t_arg *arg)
 		arg->must_eat = -1;
 	return (0);
 }
-
 
 t_arg	*init_arg(int ac, char **av)
 {
@@ -130,30 +131,59 @@ int	philo_think(t_philo *philo)
 	return (0);
 }
 
-
-void	philosophers(t_arg *arg, int id, sem_t *forks, sem_t *binarysemaphore)
+void	get_left_fork(t_philo *philo)
 {
-	t_philo	philo;
+	sem_wait(philo->semaphores->forks);
+	if (print(philo, "has taken a fork") == FAIL)
+		exit (1);
+}
 
-	philo.id = id + 1;
-	philo.arg = arg;
-	philo.data = malloc(sizeof(t_data));
-	philo.data->eat_count = 0;
-	philo.data->start_time = get_time();
-	philo.data->end_time = get_time();
+void	get_right_fork(t_philo *philo)
+{
+	sem_wait(philo->semaphores->forks);
+	if (print(philo, "has taken a fork") == FAIL)
+		exit (1);
+}
 
+int	dead_check(t_philo *philo)
+{
+	if (get_time() - philo->data->end_time >= philo->arg->time_to_die)
+	{
+		if (print(philo, "died") == FAIL)
+			return (FAIL);
+		return (DEAD);
+	}
+	return (0);
+}
+
+void	action(t_philo *philo)
+{
+	if (philo->id % 2 == 0)
+		usleep(1000);
 	while (1)
 	{
-		sem_wait(forks);
-		philo_eat(&philo);
-		sem_post(forks);
-		philo_sleep(&philo);
-		philo_think(&philo);
+		if (dead_check(philo) == DEAD)
+			exit(0);
+		get_left_fork(philo);
+		get_right_fork(philo);
+		philo_eat(philo);
+		drop_forks(philo);
+		philo_sleep(philo);
+		philo_think(philo);
 	}
 }
 
+void	init_data(t_philo *philo)
+{
+	philo->data = malloc(sizeof(t_data));
+	if (philo->data == 0)
+		exit (1);
+	philo->data->start_time = get_time();
+	philo->data->end_time = 0;
+	philo->data->eat_count = 0;
+}
 
-int	create_philosophers(t_arg *arg, int i, sem_t *forks, sem_t *binarysemaphore)
+int	create_philosophers(t_philo *philo)
 {
 	pid_t	pid;
 
@@ -162,33 +192,68 @@ int	create_philosophers(t_arg *arg, int i, sem_t *forks, sem_t *binarysemaphore)
 		return (FAIL);
 	else if (pid == 0)
 	{
-		philosophers(arg, i, forks, binarysemaphore);
+		init_data(philo);
+		action(philo);
 		exit(0);
 	}
 	return (0);
 }
 
-int main(int ac, char **av)
+t_semaphores *init_semaphores(t_arg *arg)
 {
-	sem_t *forks;
-	sem_t *binarysemaphore;
-	t_arg	*arg;
-	int	i;	
+	t_semaphores	*semaphores;
 
-	arg = malloc(sizeof(t_arg));
+	semaphores = malloc(sizeof(t_semaphores));
+	if (semaphores == 0)
+		exit (1);
+	sem_unlink("/forks");
+	sem_unlink("/dead");
+	semaphores->forks = sem_open("/forks", O_CREAT, 0644, arg->philo_num);
+	semaphores->dead = sem_open("/dead", O_CREAT, 0644, 1);
+	return (semaphores);
+}
+
+void	init_philo(t_philo **philo, int ac, char **av)
+{
+	t_arg			*arg;
+	t_semaphores	*semaphores;
+	int				i;
 
 	arg = init_arg(ac, av);
-	if (arg == 0)
-		return (FAIL);
-
-	forks = sem_open("hi", O_CREAT, 0644, arg->philo_num);
-	binarysemaphore = sem_open("binarysemaphore",O_CREAT | O_EXCL, 0644, 1);
-
+	semaphores = init_semaphores(arg);
+	*philo = malloc(sizeof(t_philo) * arg->philo_num);
+	if (*philo == 0)
+		exit (1);
 	i = -1;
 	while (++i < arg->philo_num)
-		create_philosophers(arg, i, forks, binarysemaphore);
+	{
+		(*philo)[i].id = i + 1;
+		(*philo)[i].arg = arg;
+		(*philo)[i].semaphores = semaphores;
+	}
+}
 
+void	*monitor_death(void *param)
+{
+	sem_t *dead;
+	dead = (sem_t)param;
+
+	sem_wait(dead);
+	exit(0);
+}
+
+int main(int ac, char **av)
+{
+	t_philo	*philo;
+	pthread_t	monitor;
+	int		i;	
+
+	init_philo(&philo, ac, av);
+	pthread_create(&monitor, NULL, monitor_death, philo->semaphores->dead);
 	i = -1;
-	while (++i < arg->philo_num)
+	while (++i < philo[0].arg->philo_num)
+		create_philosophers(&philo[i]);
+	i = -1;
+	while (++i < philo[0].arg->philo_num)
 		wait(NULL);
 }

@@ -62,7 +62,6 @@ int	free_philo(t_philo *philo, int index)
 	ft_free(philo[0].mutex->fork, philo[0].mutex->fork_mutex, philo[0].mutex);
 	free(philo[0].arg);
 	free(philo);
-	system("leaks philo");
 	return (0);
 }
 
