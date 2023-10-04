@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/17 04:07:16 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/23 22:01:36 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/10/04 18:48:28 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ int	dead_check(t_philo *philo)
 	if (philo->mutex->dead == DEAD
 		|| ((philo->arg->must_eat != -1
 				&& philo->data->eat_count == philo->arg->must_eat)
-			|| get_time() - (philo->data->end_time) > philo->arg->time_to_die))
+			|| get_time() - (philo->data->end_time) >= philo->arg->time_to_die))
 	{
 		pthread_mutex_unlock(&(philo->mutex->dead_mutex));
 		return (DEAD);
