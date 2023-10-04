@@ -6,20 +6,38 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/17 04:07:16 by sumjo             #+#    #+#             */
-/*   Updated: 2023/10/04 18:48:28 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/10/04 20:29:30 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include	"ph.h"
 
-int	dead_check(t_philo *philo)
+int	dead_and_full_check(t_philo *philo)
 {
 	pthread_mutex_lock(&(philo->mutex->dead_mutex));
-	if (philo->mutex->dead == DEAD
-		|| ((philo->arg->must_eat != -1
-				&& philo->data->eat_count == philo->arg->must_eat)
-			|| get_time() - (philo->data->end_time) >= philo->arg->time_to_die))
+	if (philo->full == DEAD || philo->mutex->dead == DEAD)
 	{
+		pthread_mutex_unlock(&(philo->mutex->dead_mutex));
+		return (DEAD);
+	}
+	pthread_mutex_unlock(&(philo->mutex->dead_mutex));
+	return (0);
+}
+
+int	dead(t_philo *philo)
+{
+	pthread_mutex_lock(&(philo->mutex->dead_mutex));
+
+	if (philo->mutex->dead == DEAD)
+	{
+		pthread_mutex_unlock(&(philo->mutex->dead_mutex));
+		return (DEAD);
+	}
+	if (get_time() - (philo->data->end_time) >= philo->arg->time_to_die)
+	{
+		philo->mutex->dead = DEAD;
+		printf("%d %d died\n", get_time() - philo->data->start_time,
+			philo->id);
 		pthread_mutex_unlock(&(philo->mutex->dead_mutex));
 		return (DEAD);
 	}
@@ -38,16 +56,11 @@ void	*monitoring(void *a)
 		i = -1;
 		while (++i < philo[0].arg->philo_num)
 		{
-			if (dead_check(&philo[i]) == DEAD)
-			{
-				philo[i].mutex->dead = 1;
-				printf("%d %d died\n", get_time() - philo[i].data->start_time,
-					philo[i].id);
+			
+			if (dead(&philo[i]) == DEAD)
 				return (a);
-			}
-			pthread_mutex_unlock(&(philo[i].mutex->dead_mutex));
-			usleep(100);
 		}
+		usleep(100);
 	}
 	return (a);
 }

@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/27 21:36:48 by sumjo             #+#    #+#             */
-/*   Updated: 2023/10/04 18:48:20 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/10/04 20:08:53 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,11 +25,7 @@ int	monitoring(t_philo *philo)
 		}
 		else if (philo->arg->must_eat != -1
 			&& philo->data->eat_count >= philo->arg->must_eat)
-		{
-			printf("%d %d %s\n",
-				get_time() - philo->data->start_time, philo->id, "died");
 			exit (DEAD);
-		}
 		sem_post(philo->semaphores->dead);
 		usleep(50);
 	}

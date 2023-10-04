@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 18:47:41 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/26 21:51:08 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/10/04 20:27:31 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ typedef struct s_data
 typedef struct s_philo
 {
 	int					id;
+	int					full;
 	t_arg				*arg;
 	t_data				*data;
 	t_mutex				*mutex;
@@ -79,6 +80,7 @@ t_mutex		*init_mutex(t_arg *arg);
 int			init_philo(t_philo *philo, t_arg *arg, t_mutex *mutex);
 int			init(t_philo **philo, int ac, char **av);
 
+int			dead(t_philo *philo);
 int			dead_check(t_philo *philo);
 int			print(t_philo *philo, char *str);
 
