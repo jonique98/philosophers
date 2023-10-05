@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philosophers.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: josumin <josumin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/17 04:11:41 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/26 21:31:29 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/10/05 21:53:08 by josumin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void	*philosophers(void *a)
 	philo = (t_philo *)a;
 	while (1)
 	{
-		if (dead_check(philo) == DEAD)
+		if (dead_and_full_check(philo) == DEAD)
 			break ;
 		spin_lock(philo);
 		philo_eat(philo);

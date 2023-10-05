@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ph.h                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: josumin <josumin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 18:47:41 by sumjo             #+#    #+#             */
-/*   Updated: 2023/10/04 20:27:31 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/10/05 21:53:08 by josumin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ int			init_philo(t_philo *philo, t_arg *arg, t_mutex *mutex);
 int			init(t_philo **philo, int ac, char **av);
 
 int			dead(t_philo *philo);
-int			dead_check(t_philo *philo);
+int			dead_and_full_check(t_philo *philo);
 int			print(t_philo *philo, char *str);
 
 int			philo_eat(t_philo *philo);

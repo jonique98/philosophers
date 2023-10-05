@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   spinlock.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: josumin <josumin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/17 04:05:45 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/26 21:38:28 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/10/05 21:53:08 by josumin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ int	get_right_fork(t_philo *philo)
 {
 	while (1)
 	{
-		if (dead_check(philo) == DEAD)
+		if (dead_and_full_check(philo) == DEAD)
 			return (FAIL);
 		pthread_mutex_lock(&philo->mutex->fork_mutex[philo->data->right_fork]);
 		if (philo->mutex->fork[philo->data->right_fork] == 1)
@@ -42,7 +42,7 @@ int	get_left_fork(t_philo *philo)
 {
 	while (1)
 	{
-		if (dead_check(philo) == DEAD)
+		if (dead_and_full_check(philo) == DEAD)
 			return (FAIL);
 		pthread_mutex_lock (&philo->mutex->fork_mutex[philo->data->left_fork]);
 		if (philo->mutex->fork[philo->data->left_fork] == 1)
