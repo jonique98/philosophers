@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/27 21:33:01 by sumjo             #+#    #+#             */
-/*   Updated: 2023/11/03 21:44:52 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/11/03 21:51:08 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,5 +41,4 @@ int	main(int ac, char **av)
 	while (++i < philo->arg->philo_num)
 		create_philosophers(i, philo, pid_list);
 	wait_child(pid_list, philo[0].arg->philo_num);
-	system("leaks philo_bonus");
 }
