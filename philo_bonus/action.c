@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/27 21:33:56 by sumjo             #+#    #+#             */
-/*   Updated: 2023/11/03 21:37:27 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/11/03 21:55:20 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,8 +45,6 @@ void	action(t_philo *philo)
 	pthread_t	monitor;
 
 	pthread_create(&monitor, NULL, (void *)monitoring, philo);
-	if (philo->id % 2 == 0)
-		usleep(100);
 	while (1)
 	{
 		get_left_fork(philo);
