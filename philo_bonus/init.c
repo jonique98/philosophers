@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/27 21:35:23 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/27 22:33:31 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/11/03 21:17:55 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,36 +26,36 @@ t_semaphores	*init_semaphores(t_arg *arg)
 	return (semaphores);
 }
 
-void	init_philo(t_philo **philo, pid_t **pid_list, int ac, char **av)
+t_philo	*init_philo(pid_t **pid_list, int ac, char **av)
 {
 	t_arg			*arg;
 	t_semaphores	*semaphores;
-	int				i;
+	t_philo			*philo;
 
 	arg = init_arg(ac, av);
 	semaphores = init_semaphores(arg);
 	*pid_list = malloc(sizeof(pid_t) * arg->philo_num);
 	if (pid_list == 0)
 		exit (1);
-	*philo = malloc(sizeof(t_philo) * arg->philo_num);
-	if (*philo == 0)
+	philo = malloc(sizeof(t_philo));
+	if (philo == 0)
 		exit (1);
-	i = -1;
-	while (++i < arg->philo_num)
-	{
-		(*philo)[i].id = i + 1;
-		(*philo)[i].arg = arg;
-		(*philo)[i].semaphores = semaphores;
-	}
+	init_data(philo);
+	philo->arg = arg;
+	philo->semaphores = semaphores;
+	return (philo);
 }
 
 void	init_data(t_philo *philo)
 {
+	int	time;
+
 	philo->data = malloc(sizeof(t_data));
 	if (philo->data == 0)
 		exit (1);
-	philo->data->start_time = get_time();
-	philo->data->end_time = get_time();
+	time = get_time();
+	philo->data->start_time = time;
+	philo->data->end_time = time;
 	philo->data->eat_count = 0;
 }
 

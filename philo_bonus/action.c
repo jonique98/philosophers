@@ -6,24 +6,25 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/27 21:33:56 by sumjo             #+#    #+#             */
-/*   Updated: 2023/11/03 18:19:22 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/11/03 21:37:27 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
-void	philo_eat(t_philo *philo)
+int	philo_eat(t_philo *philo)
 {
 	philo->data->end_time = get_time();
 	print(philo, "is eating");
+	catnap(get_time(), philo->arg->time_to_eat * 1000,
+		philo->arg->time_to_eat);
 	if (full_check(philo) == FULL)
 	{
 		drop_forks(philo);
-		exit(0);
+		return (FULL);
 	}
-	catnap(get_time(), philo->arg->time_to_eat * 1000,
-		philo->arg->time_to_eat);
 	drop_forks(philo);
+	return (0);
 }
 
 void	philo_sleep(t_philo *philo)
@@ -50,7 +51,8 @@ void	action(t_philo *philo)
 	{
 		get_left_fork(philo);
 		get_right_fork(philo);
-		philo_eat(philo);
+		if (philo_eat(philo) == FULL)
+			break ;
 		philo_sleep(philo);
 		philo_think(philo);
 	}

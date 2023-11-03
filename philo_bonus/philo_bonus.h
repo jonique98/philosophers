@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/27 21:47:17 by sumjo             #+#    #+#             */
-/*   Updated: 2023/11/03 18:08:54 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/11/03 21:39:24 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,16 +54,14 @@ typedef struct s_philo
 	t_arg				*arg;
 	t_data				*data;
 	t_semaphores		*semaphores;
-
 }				t_philo;
 
-void			init_philo(t_philo **philo, pid_t **pid_list,
-					int ac, char **av);
+t_philo			*init_philo(pid_t **pid_list, int ac, char **av);
 int				print(t_philo *philo, char *str);
 int				monitoring(t_philo *philo);
 int				get_time(void);
 void			catnap(int start_time, int time, int time_to);
-void			philo_eat(t_philo *philo);
+int				philo_eat(t_philo *philo);
 void			philo_sleep(t_philo *philo);
 void			philo_think(t_philo *philo);
 void			action(t_philo *philo);

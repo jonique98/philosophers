@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/27 21:38:09 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/27 21:48:56 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/11/03 21:36:59 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 
 int	print(t_philo *philo, char *str)
 {
-	sem_wait(philo->semaphores->dead);
+	if (sem_wait(philo->semaphores->dead) == -1)
+		exit(1);
 	printf("%d %d %s\n", get_time() - philo->data->start_time,
 		philo->id, str);
 	sem_post(philo->semaphores->dead);

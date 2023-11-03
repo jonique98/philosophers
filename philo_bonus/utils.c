@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/27 21:32:27 by sumjo             #+#    #+#             */
-/*   Updated: 2023/11/03 18:30:57 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/11/03 19:32:24 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,19 +62,19 @@ void	catnap(int current_time, int t, int limit)
 void	wait_child(pid_t *pid_list, int philo_num)
 {
 	int	i;
+	int	j;
 	int	status;
 
 	i = -1;
+	j = -1;
 	while (++i < philo_num)
 	{
 		waitpid(-1, &status, 0);
 		if (status == 256)
 		{
-			while (i < philo_num)
-			{
-				kill(pid_list[i], SIGKILL);
-				i++;
-			}
+			while (++j < philo_num)
+				kill(pid_list[j], SIGKILL);
+			return ;
 		}
 	}
 }
