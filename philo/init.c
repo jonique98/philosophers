@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/17 04:08:31 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/23 21:50:26 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/11/03 17:51:07 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ t_arg	*init_arg(int ac, char **av)
 
 t_data	*init_data(t_arg *arg, int i)
 {
-	t_data	*data;
+	t_data		*data;
 
 	data = malloc(sizeof(t_data));
 	if (data == 0)

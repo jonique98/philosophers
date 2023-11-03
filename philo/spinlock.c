@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   spinlock.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josumin <josumin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/17 04:05:45 by sumjo             #+#    #+#             */
-/*   Updated: 2023/10/05 21:53:08 by josumin          ###   ########.fr       */
+/*   Updated: 2023/11/03 17:34:31 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,13 +16,13 @@ int	get_right_fork(t_philo *philo)
 {
 	while (1)
 	{
-		if (dead_and_full_check(philo) == DEAD)
+		if (dead(philo) == DEAD)
 			return (FAIL);
 		pthread_mutex_lock(&philo->mutex->fork_mutex[philo->data->right_fork]);
 		if (philo->mutex->fork[philo->data->right_fork] == 1)
 		{
 			if (print(philo, "has taken a fork") == FAIL)
-				return (DEAD);
+				return (FAIL);
 			philo->mutex->fork[philo->data->right_fork] = 0;
 			pthread_mutex_unlock
 			(&philo->mutex->fork_mutex[philo->data->right_fork]);
@@ -42,13 +42,13 @@ int	get_left_fork(t_philo *philo)
 {
 	while (1)
 	{
-		if (dead_and_full_check(philo) == DEAD)
+		if (dead(philo) == DEAD)
 			return (FAIL);
 		pthread_mutex_lock (&philo->mutex->fork_mutex[philo->data->left_fork]);
 		if (philo->mutex->fork[philo->data->left_fork] == 1)
 		{
 			if (print(philo, "has taken a fork") == FAIL)
-				return (DEAD);
+				return (FAIL);
 			philo->mutex->fork[philo->data->left_fork] = 0;
 			pthread_mutex_unlock
 			(&philo->mutex->fork_mutex[philo->data->left_fork]);

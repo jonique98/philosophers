@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ph.h                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josumin <josumin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 18:47:41 by sumjo             #+#    #+#             */
-/*   Updated: 2023/10/05 21:53:08 by josumin          ###   ########.fr       */
+/*   Updated: 2023/11/03 18:27:05 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 
 # define FAIL 1
 # define DEAD 1
+# define FULL 2
 
 typedef struct s_mutex
 {
@@ -43,15 +44,14 @@ typedef struct s_data
 {
 	int				left_fork;
 	int				right_fork;
-	int				eat_count;
 	int				start_time;
 	int				end_time;
+	int				eat_count;
 }				t_data;
 
 typedef struct s_philo
 {
 	int					id;
-	int					full;
 	t_arg				*arg;
 	t_data				*data;
 	t_mutex				*mutex;
@@ -65,14 +65,14 @@ int			parsing(char **av, t_arg *arg);
 
 void		*philosophers(void *a);
 pthread_t	*philo_create_thread(t_philo *philo, pthread_t **thread);
-void		philo_pthread_join(t_philo *philo, pthread_t *thread,
-				pthread_t *monitor_thread);
+void		philo_pthread_join(t_philo *philo, pthread_t *thread);
 
 int			get_right_fork(t_philo *philo);
 int			get_left_fork(t_philo *philo);
 int			spin_lock(t_philo *philo);
 
 void		*monitoring(void *a);
+int			dead_check(t_philo *philo);
 
 t_arg		*init_arg(int ac, char **av);
 t_data		*init_data(t_arg *arg, int i);
@@ -81,13 +81,13 @@ int			init_philo(t_philo *philo, t_arg *arg, t_mutex *mutex);
 int			init(t_philo **philo, int ac, char **av);
 
 int			dead(t_philo *philo);
-int			dead_and_full_check(t_philo *philo);
 int			print(t_philo *philo, char *str);
+int			full_check(t_philo *philo);
 
 int			philo_eat(t_philo *philo);
 int			philo_sleep(t_philo *philo);
 int			philo_think(t_philo *philo);
-void		catnap(int current_time, int t, int limit);
+void		catnap(t_philo *philo, int current_time, int t, int limit);
 void		drop_fork(t_philo *philo);
 
 #endif

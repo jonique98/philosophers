@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/17 04:06:34 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/27 21:53:55 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/11/03 18:26:19 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,40 +14,48 @@
 
 int	philo_eat(t_philo *philo)
 {
-	philo->data->end_time = get_time();
-	if (print(philo, "is eating") == FAIL)
+	if (dead(philo) == DEAD)
 		return (DEAD);
-	philo->data->eat_count++;
-	catnap(get_time(), philo->arg->time_to_eat * 1000, philo->arg->time_to_eat);
+	philo->data->end_time = get_time();
+	print(philo, "is eating");
+	if (full_check(philo) == FULL)
+	{
+		drop_fork(philo);
+		return (FULL);
+	}
+	catnap(philo, get_time(), philo->arg->time_to_eat * 1000,
+		philo->arg->time_to_eat);
 	drop_fork(philo);
 	return (0);
 }
 
 int	philo_sleep(t_philo *philo)
 {
-	if (print(philo, "is sleeping") == FAIL)
-		return (DEAD);
-	catnap(get_time(), philo->arg->time_to_sleep * 1000,
+	print(philo, "is sleeping");
+	catnap(philo, get_time(), philo->arg->time_to_sleep * 1000,
 		philo->arg->time_to_sleep);
 	return (0);
 }
 
 int	philo_think(t_philo *philo)
 {
-	if (print(philo, "is thinking") == FAIL)
-		return (DEAD);
-	usleep(1000);
+	print(philo, "is thinking");
+	usleep(100);
 	return (0);
 }
 
-void	catnap(int current_time, int t, int limit)
+void	catnap(t_philo *philo, int current_time, int t, int limit)
 {
 	usleep(t / 2);
+	if (dead(philo) == DEAD)
+		return ;
 	while (1)
 	{
 		if (get_time() - current_time >= limit)
 			return ;
 		usleep(100);
+		if (dead(philo) == DEAD)
+			return ;
 	}
 }
 

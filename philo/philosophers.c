@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philosophers.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josumin <josumin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/17 04:11:41 by sumjo             #+#    #+#             */
-/*   Updated: 2023/10/05 21:53:08 by josumin          ###   ########.fr       */
+/*   Updated: 2023/11/03 17:54:43 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,14 @@ void	*philosophers(void *a)
 	philo = (t_philo *)a;
 	while (1)
 	{
-		if (dead_and_full_check(philo) == DEAD)
+		if (spin_lock(philo) == FAIL)
 			break ;
-		spin_lock(philo);
-		philo_eat(philo);
+		if (philo_eat(philo) == FULL)
+			break ;
 		philo_sleep(philo);
 		philo_think(philo);
+		if (dead_check(philo) == DEAD)
+			break ;
 	}
 	return (a);
 }
@@ -48,12 +50,10 @@ pthread_t	*philo_create_thread(t_philo *philo, pthread_t **thread)
 	return (*thread);
 }
 
-void	philo_pthread_join(t_philo *philo, pthread_t *thread,
-pthread_t *monitor_thread)
+void	philo_pthread_join(t_philo *philo, pthread_t *thread)
 {
 	int	i;
 
-	pthread_join(*monitor_thread, NULL);
 	i = -1;
 	while (++i < philo[0].arg->philo_num)
 		pthread_join(thread[i], NULL);

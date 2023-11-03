@@ -9,7 +9,7 @@ INCS_DIR	= ./
 SRCS_DIR	= ./
 
 SRC			= main.c action.c init.c print.c utils.c \
-				monitor.c forks.c\
+				monitor.c forks.c full.c\
 
 SRCS		=	$(addprefix $(SRCS_DIR), $(SRC))
 OBJS		=	$(SRCS:.c=.o)

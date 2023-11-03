@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/27 21:33:56 by sumjo             #+#    #+#             */
-/*   Updated: 2023/09/27 22:07:33 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/11/03 18:19:22 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,14 @@ void	philo_eat(t_philo *philo)
 {
 	philo->data->end_time = get_time();
 	print(philo, "is eating");
-	philo->data->eat_count++;
+	if (full_check(philo) == FULL)
+	{
+		drop_forks(philo);
+		exit(0);
+	}
 	catnap(get_time(), philo->arg->time_to_eat * 1000,
 		philo->arg->time_to_eat);
+	drop_forks(philo);
 }
 
 void	philo_sleep(t_philo *philo)
@@ -46,7 +51,6 @@ void	action(t_philo *philo)
 		get_left_fork(philo);
 		get_right_fork(philo);
 		philo_eat(philo);
-		drop_forks(philo);
 		philo_sleep(philo);
 		philo_think(philo);
 	}

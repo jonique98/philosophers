@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   print.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: josumin <josumin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/17 04:10:25 by sumjo             #+#    #+#             */
-/*   Updated: 2023/10/05 21:58:11 by josumin          ###   ########.fr       */
+/*   Updated: 2023/10/29 21:04:28 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,15 @@
 
 int	print(t_philo *philo, char *str)
 {
-	if (dead_and_full_check(philo) == 0)
+	pthread_mutex_lock(&(philo->mutex->dead_mutex));
+	if (philo->mutex->dead != DEAD)
 		printf("%d %d %s\n", get_time() - philo->data->start_time,
 			philo->id, str);
 	else
+	{
+		pthread_mutex_unlock(&(philo->mutex->dead_mutex));
 		return (FAIL);
+	}
 	pthread_mutex_unlock(&(philo->mutex->dead_mutex));
 	return (0);
 }
