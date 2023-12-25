@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/17 04:11:41 by sumjo             #+#    #+#             */
-/*   Updated: 2023/11/03 17:54:43 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/12/25 19:39:20 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ void	*philosophers(void *a)
 	t_philo	*philo;
 
 	philo = (t_philo *)a;
+	if (philo->id % 2 == 0)
+		usleep(200);
 	while (1)
 	{
 		if (spin_lock(philo) == FAIL)

@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/17 04:07:16 by sumjo             #+#    #+#             */
-/*   Updated: 2023/11/03 19:36:19 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/12/25 19:02:44 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ int	dead(t_philo *philo)
 {
 	pthread_mutex_lock(&(philo->mutex->dead_mutex));
 	if (philo->mutex->dead != DEAD
-		&& get_time() - (philo->data->end_time) >= philo->arg->time_to_die)
+		&& get_time() - (philo->data->end_time) > philo->arg->time_to_die)
 	{
 		philo->mutex->dead = 1;
 		printf("%d %d died\n", get_time() - philo->data->start_time,

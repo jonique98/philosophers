@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/17 04:06:34 by sumjo             #+#    #+#             */
-/*   Updated: 2023/11/03 18:26:19 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/12/25 19:48:48 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,11 +37,14 @@ int	philo_sleep(t_philo *philo)
 	return (0);
 }
 
-int	philo_think(t_philo *philo)
+int philo_think(t_philo *philo)
 {
-	print(philo, "is thinking");
-	usleep(100);
-	return (0);
+    print(philo, "is thinking");
+    if ((philo->arg->time_to_eat > philo->arg->time_to_sleep)
+        && (philo->arg->philo_num % 2 == 1))
+        usleep((philo->arg->time_to_eat - philo->arg->time_to_sleep) * 1000);
+    usleep(100);
+    return (0);
 }
 
 void	catnap(t_philo *philo, int current_time, int t, int limit)
