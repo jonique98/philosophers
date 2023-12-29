@@ -6,7 +6,7 @@
 /*   By: sumjo <sumjo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/17 04:11:41 by sumjo             #+#    #+#             */
-/*   Updated: 2023/12/25 19:39:20 by sumjo            ###   ########.fr       */
+/*   Updated: 2023/12/29 18:46:21 by sumjo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,10 @@ pthread_t	*philo_create_thread(t_philo *philo, pthread_t **thread)
 		ms = get_time();
 		philo[i].data->start_time = ms;
 		philo[i].data->end_time = ms;
-		pthread_create(&(*thread)[i], NULL, philosophers, (void *)&philo[i]);
 	}
+	i = -1;
+	while (++i < philo[0].arg->philo_num)
+		pthread_create(&(*thread)[i], NULL, philosophers, (void *)&philo[i]);
 	return (*thread);
 }
 
